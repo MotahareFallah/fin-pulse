@@ -1,0 +1,30 @@
+[project]
+name = "fin-pulse"
+version = "0.1.0"
+description = "Distributed Financial Event Processing Engine"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.29",
+  "aiokafka>=0.10",
+  "asyncpg>=0.29",
+  "redis>=5.0",
+  "pydantic>=2.6",
+]
+
+[dependency-groups]
+dev = ["pytest>=8", "pytest-asyncio>=0.23", "httpx>=0.27", "ruff>=0.4"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
