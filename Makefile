@@ -1,4 +1,4 @@
-.PHONY: up down reset psql topics api install test lint reconcile
+.PHONY: up down reset psql topics api install test lint fmt hooks reconcile
 
 up:
 	docker compose up -d
@@ -36,3 +36,12 @@ topics:
 # ports 8000/8001 are taken by other projects on this machine
 api:
 	uv run uvicorn fin_pulse.api.main:app --port 8010
+
+# format + autofix lint issues
+fmt:
+	uv run ruff check --fix .
+	uv run ruff format .
+
+# install git hooks (pre-commit, commit-msg, pre-push)
+hooks:
+	uv run pre-commit install
