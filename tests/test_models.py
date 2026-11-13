@@ -13,7 +13,12 @@ def deposit(**over):
 
 
 def transfer(**over):
-    p = {"from_account": "acc_00001", "to_account": "acc_00002", "amount": 500, "currency": "IRR"}
+    p = {
+        "from_account": "acc_00001",
+        "to_account": "acc_00002",
+        "amount": 500,
+        "currency": "IRR",
+    }
     p.update(over)
     return {**BASE, "type": "transfer.requested", "payload": p}
 

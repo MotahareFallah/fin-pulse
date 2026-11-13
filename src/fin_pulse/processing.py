@@ -10,6 +10,7 @@ Order inside the transaction matters:
 If anything raises, the whole transaction (including the claim) rolls back,
 so the event can be safely retried.
 """
+
 from dataclasses import dataclass
 
 import asyncpg
@@ -54,9 +55,13 @@ async def _lock_accounts(conn: asyncpg.Connection, account_ids: list[str]) -> di
     return {r["account_id"]: r for r in rows}
 
 
-async def _post(conn: asyncpg.Connection, event_id: str, account_id: str, delta: int) -> None:
+async def _post(
+    conn: asyncpg.Connection, event_id: str, account_id: str, delta: int
+) -> None:
     await conn.execute(
-        "UPDATE accounts SET balance = balance + $2 WHERE account_id = $1", account_id, delta
+        "UPDATE accounts SET balance = balance + $2 WHERE account_id = $1",
+        account_id,
+        delta,
     )
     await conn.execute(
         "INSERT INTO ledger_entries (event_id, account_id, amount) VALUES ($1, $2, $3)",
@@ -68,7 +73,11 @@ async def _post(conn: asyncpg.Connection, event_id: str, account_id: str, delta:
 
 async def process_event(pool: asyncpg.Pool, event) -> Outcome:
     p = event.payload
-    ids = [p.from_account, p.to_account] if isinstance(event, TransferEvent) else [p.account_id]
+    ids = (
+        [p.from_account, p.to_account]
+        if isinstance(event, TransferEvent)
+        else [p.account_id]
+    )
 
     async with pool.acquire() as conn:
         async with conn.transaction():

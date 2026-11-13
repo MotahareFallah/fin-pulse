@@ -79,7 +79,8 @@ def test_kafka_failure_returns_503_and_releases_the_claim():
     client, redis, _ = make_client(producer=FakeProducer(fail=True))
     r = client.post("/events", json=deposit())
     assert r.status_code == 503 and r.headers["retry-after"] == "1"
-    assert redis.keys == set()  # claim released, so a retry is not mistaken for a duplicate
+    # claim released, so a retry is not mistaken for a duplicate
+    assert redis.keys == set()
     app.state.producer = FakeProducer()
     assert client.post("/events", json=deposit()).status_code == 202
 

@@ -1,5 +1,6 @@
 """Integration tests against the REAL Postgres from docker compose (`make up`).
 They skip automatically if Postgres is not reachable."""
+
 import asyncio
 import uuid
 
@@ -15,8 +16,10 @@ from fin_pulse.processing import process_event
 @pytest_asyncio.fixture
 async def pool():
     try:
-        p = await asyncpg.create_pool(settings.postgres_dsn, min_size=1, max_size=10, timeout=3)
-    except (OSError, asyncpg.PostgresError, asyncio.TimeoutError):
+        p = await asyncpg.create_pool(
+            settings.postgres_dsn, min_size=1, max_size=10, timeout=3
+        )
+    except (TimeoutError, OSError, asyncpg.PostgresError):
         pytest.skip("postgres is not reachable (run `make up`)")
     yield p
     await p.close()
@@ -45,11 +48,15 @@ async def new_account(pool, balance):
 
 
 async def balance(pool, acc):
-    return await pool.fetchval("SELECT balance FROM accounts WHERE account_id = $1", acc)
+    return await pool.fetchval(
+        "SELECT balance FROM accounts WHERE account_id = $1", acc
+    )
 
 
 async def ledger_rows(pool, event_id):
-    return await pool.fetchval("SELECT count(*) FROM ledger_entries WHERE event_id = $1", event_id)
+    return await pool.fetchval(
+        "SELECT count(*) FROM ledger_entries WHERE event_id = $1", event_id
+    )
 
 
 async def test_deposit_is_applied(pool):

@@ -7,6 +7,7 @@ Design rules (see docs/adr/0001):
   the claim. Otherwise the client's retry would be treated as a duplicate and
   the event would be silently lost.
 """
+
 import logging
 from contextlib import asynccontextmanager
 
@@ -58,13 +59,18 @@ async def ingest(event: Event, request: Request):
     claimed = False
 
     try:
-        claimed = bool(await state.redis.set(idem_key, "1", nx=True, ex=IDEMPOTENCY_TTL_SECONDS))
+        claimed = bool(
+            await state.redis.set(idem_key, "1", nx=True, ex=IDEMPOTENCY_TTL_SECONDS)
+        )
         if not claimed:
             return JSONResponse(
-                status_code=200, content={"event_id": event.event_id, "status": "duplicate"}
+                status_code=200,
+                content={"event_id": event.event_id, "status": "duplicate"},
             )
     except RedisError:
-        log.warning("redis unavailable: skipping fast-path dedup for %s", event.event_id)
+        log.warning(
+            "redis unavailable: skipping fast-path dedup for %s", event.event_id
+        )
 
     try:
         await state.producer.send_and_wait(

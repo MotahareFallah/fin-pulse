@@ -1,12 +1,17 @@
 """Event contracts. The client sends no partition key: the server derives it,
 so a client can never route an event to the wrong partition."""
+
 from datetime import datetime
-from typing import Annotated, Literal, Union
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, model_validator
 
-EventId = Annotated[str, Field(min_length=8, max_length=128, pattern=r"^[A-Za-z0-9_-]+$")]
-AccountId = Annotated[str, Field(min_length=1, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")]
+EventId = Annotated[
+    str, Field(min_length=8, max_length=128, pattern=r"^[A-Za-z0-9_-]+$")
+]
+AccountId = Annotated[
+    str, Field(min_length=1, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")
+]
 # strict=True: 150.5 or "150" are rejected. Money is an integer in the smallest unit.
 Amount = Annotated[int, Field(strict=True, gt=0, le=10**15)]
 Currency = Annotated[str, Field(pattern=r"^[A-Z]{3}$")]
@@ -57,7 +62,7 @@ class TransferEvent(_Frozen):
 
 
 Event = Annotated[
-    Union[DepositEvent, WithdrawalEvent, TransferEvent], Field(discriminator="type")
+    DepositEvent | WithdrawalEvent | TransferEvent, Field(discriminator="type")
 ]
 event_adapter: TypeAdapter[Event] = TypeAdapter(Event)
 
