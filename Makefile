@@ -1,4 +1,4 @@
-.PHONY: up down reset psql topics api install test lint fmt hooks reconcile
+.PHONY: up down reset psql topics api worker install test lint fmt hooks reconcile
 
 up:
 	docker compose up -d
@@ -45,3 +45,7 @@ fmt:
 # install git hooks (pre-commit, commit-msg, pre-push)
 hooks:
 	uv run pre-commit install
+
+# consumer group "fin-pulse-workers"; run several in separate terminals to scale
+worker:
+	uv run python -m fin_pulse.worker.main
