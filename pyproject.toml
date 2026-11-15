@@ -4,7 +4,9 @@ version = "0.1.0"
 description = "Distributed event processing engine for financial transactions"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "pydantic>=2.14.3",
+]
 
 [build-system]
 requires = ["setuptools>=68"]
