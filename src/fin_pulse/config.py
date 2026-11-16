@@ -9,6 +9,9 @@ class Settings:
     postgres_dsn: str = os.getenv(
         "POSTGRES_DSN", "postgresql://finpulse:finpulse@localhost:5434/finpulse"
     )
+    kafka_bootstrap: str = os.getenv("KAFKA_BOOTSTRAP", "localhost:9092")
+    redis_url: str = os.getenv("REDIS_URL", "redis://localhost:6380/0")
+    topic_events: str = os.getenv("TOPIC_EVENTS", "fin.events")
 
 
 settings = Settings()
