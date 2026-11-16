@@ -22,6 +22,7 @@ where = ["src"]
 
 [dependency-groups]
 dev = [
+    "httpx2>=2.16.1",
     "pre-commit>=4.7.0",
     "pytest>=9.2.0",
     "pytest-asyncio>=1.5.0",
