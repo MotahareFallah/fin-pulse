@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install test lint fmt hooks up down reset psql topics reconcile
+.PHONY: help install test lint fmt hooks up down reset psql topics reconcile api
 
 help: ## Show available commands
 	@grep -E '^[a-z_-]+:.*## ' $(MAKEFILE_LIST) | awk -F ':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
@@ -42,3 +42,6 @@ topics: ## Create the Kafka topics
 
 reconcile: ## Ledger check, must print 0 rows
 	docker compose exec postgres psql -U finpulse -d finpulse -c "SELECT * FROM account_reconciliation WHERE balance <> expected;"
+
+api: ## Run the API on port 8010
+	uv run uvicorn fin_pulse.api.main:app --port 8010
