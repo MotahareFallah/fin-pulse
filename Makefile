@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install test lint fmt hooks up down reset psql topics reconcile api
+.PHONY: help install test lint fmt hooks up down reset psql topics reconcile api worker
 
 help: ## Show available commands
 	@grep -E '^[a-z_-]+:.*## ' $(MAKEFILE_LIST) | awk -F ':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
@@ -45,3 +45,6 @@ reconcile: ## Ledger check, must print 0 rows
 
 api: ## Run the API on port 8010
 	uv run uvicorn fin_pulse.api.main:app --port 8010
+
+worker: ## Run a worker (start several terminals to scale)
+	uv run python -m fin_pulse.worker.main
